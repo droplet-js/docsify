@@ -11,6 +11,8 @@
         * [签名](/dev/android/keystore.md)
         * [Walle](/dev/android/walle.md)
         * [加固](/dev/android/jiagu.md)
+        * [Log](/dev/android/log.md)
+        * [发布](/dev/android/publish.md)
     * [iOS](/dev/ios/README.md)
         * [CocoaPods](/dev/ios/cocoapods.md)
     * [Flutter](/dev/flutter/README.md)
