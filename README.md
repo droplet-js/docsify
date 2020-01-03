@@ -7,7 +7,7 @@
 * 安装 docsify-cli
 
 ```shell
-docsify-cli
+npm i docsify-cli -g
 ```
 
 * 初始化项目

@@ -45,10 +45,10 @@
 * 配置登录/深度链接
 * 配置管理人员和开发人员
 
-```
-App ID: xxx
-App Secret: yyy
-```
+    ```
+    App ID: xxx
+    App Secret: yyy
+    ```
 
 ##### LINE
 
@@ -57,10 +57,10 @@ App Secret: yyy
 * 配置隐私协议/用户协议
 * 发布
 
-```
-Channel ID: xxx
-Channel secret: yyy
-```
+    ```
+    Channel ID: xxx
+    Channel secret: yyy
+    ```
 
 ##### Google Play上架App设置隐私政策声明问题
 
