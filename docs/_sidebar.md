@@ -7,7 +7,7 @@
     * [Java](/dev/java/README.md)
     * [Kotlin](/dev/kotlin/README.md)
     * [Android](/dev/android/README.md)
-        * [Android Studio](/dev/android/as.md)
+        * [Android Studio](/dev/android/android-studio.md)
         * [Maven](/dev/android/maven.md)
         * [签名](/dev/android/keystore.md)
         * [Walle](/dev/android/walle.md)
