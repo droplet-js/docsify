@@ -170,8 +170,6 @@ class Utility {
 metrics_reactor.dart
 
 ```dart
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -196,8 +194,6 @@ class MetricsReactor extends StatefulWidget {
 
 class _MetricsReactorState extends State<MetricsReactor>
     with WidgetsBindingObserver {
-  MediaQueryData _originMediaQuery;
-
   @override
   void initState() {
     super.initState();
@@ -230,25 +226,18 @@ class _MetricsReactorState extends State<MetricsReactor>
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery = MediaQuery.of(context);
-    if (_originMediaQuery == null ||
-        _originMediaQuery.viewInsets == EdgeInsets.zero) {
-      _originMediaQuery =
-          MediaQueryData.fromWindow(WidgetsBinding.instance.window);
-    }
     return MediaQuery(
       data: mediaQuery.copyWith(
         padding: mediaQuery.padding.copyWith(
-          bottom: _originMediaQuery.viewInsets.bottom,
+          bottom: mediaQuery.viewInsets.bottom,
         ),
         viewPadding: mediaQuery.viewPadding.copyWith(
-          bottom: _originMediaQuery.viewInsets.bottom,
+          bottom: mediaQuery.viewInsets.bottom,
         ),
-        viewInsets: mediaQuery.viewInsets.copyWith(
-          bottom: math.max(
-              0,
-              mediaQuery.viewInsets.bottom -
-                  _originMediaQuery.viewInsets.bottom),
-        ),
+//        // 正确做法
+//        viewInsets: mediaQuery.viewInsets.copyWith(
+//          bottom: math.max(0, mediaQuery.viewInsets.bottom - _originMediaQuery.viewInsets.bottom),
+//        ),
       ),
       child: Builder(
         builder: widget.builder,
@@ -350,12 +339,9 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         itemCount: 100,
       ),
-      floatingActionButton: Container(
-//        margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),// 没有 bottomNavigationBar 时需加上
-        child: FloatingActionButton(
-          child: Text('+'),
-          onPressed: () {},
-        ),
+      floatingActionButton: FloatingActionButton(
+        child: Text('+'),
+        onPressed: () {},
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomAppBar(
