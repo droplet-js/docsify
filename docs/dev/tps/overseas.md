@@ -7,7 +7,7 @@
 * 商家账号/付款方式
 * 设置 -> 开发者账号 -> API 权限 -> Google Play 新账号的话，要先关联下，必须在添加内购前关联 Google Play Android Developer
 * 设置 -> 开发者账号 -> API 权限 -> 创建服务账号 -> 为 Billing（账单和财务） 创建服务账号并创建密钥（自动生成并下载 json 格式密钥）
-* 设置 -> 开发者账号 -> 用户和权限 -> Billing（账单和财务）的服务账号添加访问权限（这个必须要早于配置内购产品）
+* 设置 -> 开发者账号 -> 用户和权限 -> Billing（账单和财务）的服务账号添加访问权限（Google Play Android Developer项目上，这个必须要早于配置内购产品）
 * 设置 -> 开发者账号 -> 关联的账号 -> 先到 Firebase 上邀请 Google Play 账号所有者为管理人员后，Google Play 上才能关联 Firebase 项目
 
 ##### Firebase
