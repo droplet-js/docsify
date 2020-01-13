@@ -11,6 +11,7 @@
         * [Maven](/dev/android/maven.md)
         * [签名](/dev/android/keystore.md)
         * [Gradle](/dev/android/gradle/README.md)
+            * [Logging](/dev/android/gradle/logging.md)
             * [Walle & 加固](/dev/android/gradle/walle-jiagu.md)
             * [Play Publisher](/dev/android/gradle/play-publisher.md)
         * [Log](/dev/android/log.md)

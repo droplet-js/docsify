@@ -10,7 +10,13 @@
 
 没办法，只能自己定制一个了
 
-```groovy
+play-publisher.gradle
+
+```
+//
+//使用方法
+//
+//apply from: 'play-publisher.gradle'
 //
 //android {
 //    productFlavors {
