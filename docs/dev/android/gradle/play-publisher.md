@@ -12,7 +12,7 @@
 
 play-publisher.gradle
 
-```
+```groovy
 //
 //使用方法
 //
