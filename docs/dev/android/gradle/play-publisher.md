@@ -191,7 +191,7 @@ class PlayPublisherPlugin implements Plugin<Project> {
         System.out.println("track: ${play.track ?: 'internal'}")
         System.out.println("release name: ${play.releaseName ?: variant.versionName}")
         System.out.println("release status: ${play.releaseStatus ?: 'draft'}")
-        def releaseNotes = play.releaseNotes?.collect{note -> new LocalizedText().setLanguage(note.key).setText(note.value)}.toList()
+        def releaseNotes = play.releaseNotes?.collect{note -> new LocalizedText().setLanguage(note.key).setText(note.value)}.collect().toList()
         if (releaseNotes == null || releaseNotes.empty) {
             List<Track> tracks = publisher.edits().tracks().list(variant.applicationId, editId).execute().tracks
             if (tracks != null && !tracks.empty) {
