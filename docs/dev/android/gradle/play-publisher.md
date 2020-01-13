@@ -22,7 +22,7 @@
 //            enabled = true
 //
 //            // 服务账号：主账号创建的才能使用，关联账号创建的不能使用
-//            // 设置 -> 开发者账号 -> 用户和权限 -> 邀请新用户 -> 版本管理 -> 管理测试版
+//            // 设置 -> 开发者账号 -> 用户和权限 -> 邀请新用户 -> 版本管理 -> 管理测试版 & 管理正式版(production)
 //            serviceAccountCredentials = file('play/play-publisher.json')
 //
 //            track = 'internal' // 可选：'internal'、'alpha'、'beta'、'production'，默认：'internal'
