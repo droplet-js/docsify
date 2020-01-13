@@ -16,3 +16,10 @@
     * [访问管理](https://console.cloud.tencent.com/cam/capi)
     * [移动应用安全](https://console.cloud.tencent.com/ms/reinforce/list)
 * [v7lin/tencentcloud-legu](https://github.com/v7lin/tencentcloud-legu)
+
+##### 混合
+
+walle 官方已经半放弃维护了，想要继续用用，自能自己维护 gradle 插件。相比而言维护 walle-cli 更简单，而且还能定制360加固、腾讯乐固、以及支持falvor
+
+```groovy
+```
