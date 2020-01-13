@@ -134,14 +134,17 @@ class PlayPublisherPlugin implements Plugin<Project> {
             target.android.extensions.playConfigs = playConfigs
             target.android.applicationVariants.whenObjectAdded { variant ->
                 def mergePlay = null
-                def flavorPlay = variant.productFlavors != null && !variant.productFlavors.empty ? playConfigs.findByName(variant.productFlavors[0].name) : null
+                def flavorPlays = variant.productFlavors?.stream().map{flavor -> playConfigs.findByName(flavor.name)}.collect().toList() ?: Collections.emptyList()
                 def buildTypePlay = playConfigs.findByName(variant.buildType.name)
                 if (buildTypePlay == null && (variant.buildType.name == 'debug' || variant.buildType.name == 'profile')) {
                     buildTypePlay = new Play(variant.buildType.name)
                     buildTypePlay.enabled = false
                 }
                 // buildType > flavor > base
-                def plays = Arrays.asList(basePlay, flavorPlay, buildTypePlay)
+                List<Play> plays = new ArrayList<>()
+                plays.add(basePlay)
+                plays.addAll(flavorPlays)
+                plays.add(buildTypePlay)
                 for (def play in plays) {
                     if (mergePlay == null) {
                         mergePlay = play
@@ -188,7 +191,7 @@ class PlayPublisherPlugin implements Plugin<Project> {
         System.out.println("track: ${play.track ?: 'internal'}")
         System.out.println("release name: ${play.releaseName ?: variant.versionName}")
         System.out.println("release status: ${play.releaseStatus ?: 'draft'}")
-        def releaseNotes = play.releaseNotes?.collect{note -> new LocalizedText().setLanguage(note.key).setText(note.value)}.collect().toList()
+        def releaseNotes = play.releaseNotes?.collect{note -> new LocalizedText().setLanguage(note.key).setText(note.value)}.toList()
         if (releaseNotes == null || releaseNotes.empty) {
             List<Track> tracks = publisher.edits().tracks().list(variant.applicationId, editId).execute().tracks
             if (tracks != null && !tracks.empty) {
@@ -208,7 +211,7 @@ class PlayPublisherPlugin implements Plugin<Project> {
             if (aabFile == null || !aabFile.exists()) {
                 aabFile = new File("${target.buildDir}/outputs/bundle/${variant.name}/app.aab")
             }
-            System.out.println("aab file path: ${aabFile.absolutePath}")
+            System.out.println("aab file path: ${aabFile.path}")
 
             try {
                 // upload
@@ -244,7 +247,7 @@ class PlayPublisherPlugin implements Plugin<Project> {
             }
         } else {
             File apkFile = variant.outputs.first().outputFile as File
-            System.out.println("apk file path: ${apkFile.absolutePath}")
+            System.out.println("apk file path: ${apkFile.path}")
             try {
                 // upload
                 def uploadApk = publisher
