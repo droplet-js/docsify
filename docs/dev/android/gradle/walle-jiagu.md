@@ -19,7 +19,7 @@
 
 ##### 混合
 
-walle 官方已经半放弃维护了，想要继续用用，自能自己维护 gradle 插件。相比而言维护 walle-cli 更简单，而且还能定制360加固、腾讯乐固、以及支持falvor
+walle 官方已经半放弃维护了，想要继续用，只能自己维护 gradle 插件。相比而言维护 walle-cli 更简单，而且还能定制360加固、腾讯乐固、以及支持falvor
 
 walle.gradle
 
