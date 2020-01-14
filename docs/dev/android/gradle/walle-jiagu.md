@@ -39,12 +39,12 @@ walle.gradle
 //            enabled = true
 //
 ////            // https://github.com/v7lin/walle-docker
-////            jarFile = file('script/walle-cli-all.jar')
+////            jarFile = file('script/walle-cli-all.jar') // 默认：file('script/walle-cli-all.jar')
 //            channelFile = file('channel')
 //
 //            qihoo360 {
 ////                // https://github.com/v7lin/qihoo360-jiagu-docker
-////                jiaguJarFile = file('script/jiagu/jiagu.jar')
+////                jiaguJarFile = file('script/jiagu/jiagu.jar') // 默认：file('script/jiagu/jiagu.jar')
 //
 //                account = 'xxx'
 //                password = 'xxx'
@@ -53,13 +53,15 @@ walle.gradle
 //
 //            tencent {
 ////                // https://github.com/v7lin/tencentcloud-legu
-////                leguJarFile = file('script/legu-all.jar')
+////                leguJarFile = file('script/legu-all.jar') // 默认：file('script/legu-all.jar')
 //
 //                secretId = 'xxx'
 //                secretKey = 'xxx'
 ////                region = 'ap-guangzhou' // 可选：'ap-guangzhou'、'ap-shanghai'，默认：'ap-guangzhou'
 //                channelId = 'tencent'
 //            }
+//
+//            outputDir = file("${project.buildDir}/walle") // 默认：file("${project.buildDir}/outputs/apk/${flavorName}/${buildType}/walle")
 //        }
 //    }
 //}
@@ -228,14 +230,19 @@ class WallePlugin implements Plugin<Project> {
                         return
                     }
 
+                    File apkFile = variant.outputs.first().outputFile as File
+
                     // android.buildToolsVersion，walle 官方暂未作 Apk Signature Scheme v3 支持
-                    def buildToolsVersionForApkSigner = '27.0.3'
-                    if (v3SigningEnabled(variant) || mergeWalle.qihoo360 != null || mergeWalle.tencent != null) {
-                        if (!new File("${target.android.sdkDirectory.path}/build-tools/${buildToolsVersionForApkSigner}/apksigner").exists()) {
-                            target.exec {
-                                commandLine 'bash', '-lc', "mkdir -p ~/.android/ && " +
-                                        "touch ~/.android/repositories.cfg && " +
-                                        "echo y | ${target.android.sdkDirectory.path}/tools/bin/sdkmanager --install \"build-tools;${buildToolsVersionForApkSigner}\""
+                    def buildToolsVersionForApkSigner = target.android.buildToolsVersion
+                    if (v3SigningEnabled(target, apkFile)) {
+                        buildToolsVersionForApkSigner = '27.0.3'
+                        if (mergeWalle.qihoo360 != null || mergeWalle.tencent != null) {
+                            if (!new File("${target.android.sdkDirectory.path}/build-tools/${buildToolsVersionForApkSigner}/apksigner").exists()) {
+                                target.exec {
+                                    commandLine 'bash', '-lc', "mkdir -p ~/.android/ && " +
+                                            "touch ~/.android/repositories.cfg && " +
+                                            "echo y | ${target.android.sdkDirectory.path}/tools/bin/sdkmanager --install \"build-tools;${buildToolsVersionForApkSigner}\""
+                                }
                             }
                         }
                     }
@@ -270,7 +277,6 @@ class WallePlugin implements Plugin<Project> {
                         throw new IllegalStateException('walle channel file 不存在')
                     }
 
-                    File apkFile = variant.outputs.first().outputFile as File
                     System.out.println("apk file path: ${apkFile.path}")
 
                     File outputDir = mergeWalle.outputDir
@@ -281,13 +287,12 @@ class WallePlugin implements Plugin<Project> {
                     if (!channelsDir.exists()) {
                         channelsDir.mkdirs()
                     }
-                    target.exec {
-                        commandLine 'bash', '-lc', "rm -rf ${outputDir.path}/*"
-                    }
 
                     File destApkFile = new File(outputDir, apkFile.name.replace('app-', '').replace("${variant.buildType.name}", "${variant.versionName}"))
 
-                    if (v3SigningEnabled(variant)) {
+                    System.out.println("v3SigningEnabled: ${v3SigningEnabled(target, apkFile)}")
+
+                    if (v3SigningEnabled(target, apkFile)) {
                         // 重新签名
                         signApk(target, variant, buildToolsVersionForApkSigner, apkFile, destApkFile)
                     } else {
@@ -339,7 +344,7 @@ class WallePlugin implements Plugin<Project> {
                                     commandLine 'bash', '-lc', "unzip ${jiaguZipFile.path}"
                                 }
                             }
-                            if (!jiaguZipFile.exists()) {
+                            if (!jiaguJarFile.exists()) {
                                 throw new IllegalStateException('下载 jiagu/jiagu.jar 失败')
                             }
                         }
@@ -450,8 +455,16 @@ class WallePlugin implements Plugin<Project> {
         }
     }
 
-    boolean v3SigningEnabled(variant) {
-        return true//variant.signingConfig['v3SigningEnabled'] ?: false
+    boolean v3SigningEnabled(Project target, File apkFile) {
+        // android.buildToolsVersion 从 29.0.0 才开始支持 v3 signing scheme
+        File verifyLogFile = new File(apkFile.parentFile, 'verify.log')
+        if (verifyLogFile.exists()) {
+            verifyLogFile.delete()
+        }
+        target.exec {
+            commandLine 'bash', '-lc', "${target.android.sdkDirectory.path}/build-tools/${target.android.buildToolsVersion}/apksigner verify --verbose ${apkFile.path} >> ${verifyLogFile.path}"
+        }
+        return verifyLogFile.readLines().contains('Verified using v3 scheme (APK Signature Scheme v3): true')
     }
 
     void signApk(Project target, variant, String buildToolsVersion, File apkFile, File destApkFile) {

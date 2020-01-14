@@ -29,7 +29,7 @@ play-publisher.gradle
 //
 //            // 服务账号：主账号创建的才能使用，关联账号创建的不能使用
 //            // 设置 -> 开发者账号 -> 用户和权限 -> 邀请新用户 -> 版本管理 -> 管理测试版 & 管理正式版(production)
-//            serviceAccountCredentials = file('play/play-publisher.json')
+//            serviceAccountCredentials = file("src/$name/play-publisher.json")
 //
 //            track = 'internal' // 可选：'internal'、'alpha'、'beta'、'production'，默认：'internal'
 ////            releaseName = "custom release name" // 默认：variant.versionName
@@ -212,10 +212,10 @@ class PlayPublisherPlugin implements Plugin<Project> {
         if (publishAab) {
             File aabFile = null
             if (variant.productFlavors != null && !variant.productFlavors.empty) {
-                aabFile = new File("${target.buildDir}/outputs/bundle/${variant.name}/app-${variant.productFlavors.stream().map{flavor -> flavor.name}.collect().join('-')}-${variant.buildType.name}.aab")
+                aabFile = target.file("${target.buildDir}/outputs/bundle/${variant.name}/app-${variant.productFlavors.stream().map{flavor -> flavor.name}.collect().join('-')}-${variant.buildType.name}.aab")
             }
             if (aabFile == null || !aabFile.exists()) {
-                aabFile = new File("${target.buildDir}/outputs/bundle/${variant.name}/app.aab")
+                aabFile = target.file("${target.buildDir}/outputs/bundle/${variant.name}/app.aab")
             }
             System.out.println("aab file path: ${aabFile.path}")
 
