@@ -305,9 +305,9 @@ class WallePlugin implements Plugin<Project> {
                     System.out.println("package name: ${variant.applicationId}")
                     writeChannels(target, jarFile, destApkFile, mergeWalle.channelFile, channelsDir)
 
-                    if (mergeWalle.qihoo360 != null) {
-                        checkChannel(mergeWalle.channelFile, mergeWalle.qihoo360.channelId, 'qihoo360 渠道配置错误')
+                    List<String> channelLines = mergeWalle.channelFile.readLines()
 
+                    if (mergeWalle.qihoo360 != null && channelLines.contains(mergeWalle.qihoo360.channelId)) {
                         System.out.println('qihoo360 jiagu & channel')
 
                         File jiaguJarFile = mergeWalle.qihoo360.jiaguJarFile
@@ -327,7 +327,7 @@ class WallePlugin implements Plugin<Project> {
                                 }
                                 try {
                                     target.exec {
-                                        commandLine 'bash', '-lc', "unzip -o ${jiaguZipFile.path} 'jiagu/*' -d ${jiaguZipFile.parentFile.path}" // 坑爹啊，普通 shell 下 unzip 是正常的！！！
+                                        commandLine 'bash', '-lc', "unzip -o ${jiaguZipFile.path} 'jiagu/*' -d ${jiaguJarFile.parentFile.parentFile.path}" // 坑爹啊，普通 shell 下 unzip 是正常的！！！
                                     }
                                 } catch (e) {
                                 }
@@ -341,7 +341,7 @@ class WallePlugin implements Plugin<Project> {
                                     }
                                 }
                                 target.exec {
-                                    commandLine 'bash', '-lc', "unzip ${jiaguZipFile.path}"
+                                    commandLine 'bash', '-lc', "unzip -o ${jiaguZipFile.path} -d ${jiaguJarFile.parentFile.parentFile.path}"
                                 }
                             }
                             if (!jiaguJarFile.exists()) {
@@ -385,9 +385,7 @@ class WallePlugin implements Plugin<Project> {
                         writeChannel(target, jarFile, jiaguApkSigned, mergeWalle.qihoo360.channelId, jiaguApkChannel)
                     }
 
-                    if (mergeWalle.tencent != null) {
-                        checkChannel(mergeWalle.channelFile, mergeWalle.tencent.channelId, 'tencent 渠道配置错误')
-
+                    if (mergeWalle.tencent != null && channelLines.contains(mergeWalle.tencent.channelId)) {
                         System.out.println('tencent legu & channel')
 
                         File leguJarFile = mergeWalle.tencent.leguJarFile
@@ -455,8 +453,12 @@ class WallePlugin implements Plugin<Project> {
         }
     }
 
+    // android.buildToolsVersion 从 29.0.0 才开始支持 v3 signing scheme
+    // 28.0.x这玩意，Gradle自动签是v2的，Shell手动签的是v3的，而且还无法用以下方法判断！
     boolean v3SigningEnabled(Project target, File apkFile) {
-        // android.buildToolsVersion 从 29.0.0 才开始支持 v3 signing scheme
+        if (target.android.buildToolsVersion.startsWith('28')) {
+            return true
+        }
         File verifyLogFile = new File(apkFile.parentFile, 'verify.log')
         if (verifyLogFile.exists()) {
             verifyLogFile.delete()
@@ -487,13 +489,6 @@ class WallePlugin implements Plugin<Project> {
     void writeChannel(Project target, File jarFile, File apkFile, String channelId, File outputApkFile) {
         target.exec {
             commandLine 'bash', '-lc', "java -jar ${jarFile.path} put -c $channelId ${apkFile.path} ${outputApkFile.path}"
-        }
-    }
-
-    void checkChannel(File channelFile, String channelId, String errorMsg) {
-        List<String> channelLines = channelFile.readLines()
-        if (!channelLines.contains(channelId)) {
-            throw new IllegalStateException(errorMsg)
         }
     }
 }
