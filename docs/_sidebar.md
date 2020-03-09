@@ -28,6 +28,8 @@
         * [Play Publisher](/dev/flutter/play-publisher.md)
     * [JavaScript](/dev/javascript/README.md)
         * [WebView](/dev/javascript/webview.md)
+        * [nodejs + ts](/dev/javascript/nodejs-ts.md)
+        * [Wechaty](/dev/javascript/wechaty.md)
     * [Spring](/dev/spring/README.md)
     * [第三方服务](/dev/tps/README.md)
         * [国内](/dev/tps/domestic.md)
